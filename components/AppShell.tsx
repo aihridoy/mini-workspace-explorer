@@ -61,7 +61,7 @@ export function AppShell() {
           </div>
         )}
 
-        <main className="min-w-0 flex-1 overflow-y-auto">
+        <main className="min-w-0 flex-1 overflow-hidden">
           <MainPanel />
         </main>
       </div>
