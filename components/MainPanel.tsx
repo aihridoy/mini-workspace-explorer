@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { ConfirmDeleteDialog } from "@/components/ConfirmDeleteDialog";
 import { EmptyState } from "@/components/EmptyState";
+import { FileEditor } from "@/components/FileEditor";
 import { ItemList } from "@/components/ItemList";
 import { NameDialog } from "@/components/NameDialog";
 import { Toolbar } from "@/components/Toolbar";
@@ -68,21 +69,26 @@ export function MainPanel() {
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-        {file ? (
-          <pre className="whitespace-pre-wrap rounded-lg border border-zinc-200 bg-zinc-50 p-4 font-mono text-sm">
-            {file.content}
-          </pre>
-        ) : children.length > 0 ? (
-          <ItemList
-            items={children}
-            onRename={(item) => setDialog({ kind: "rename", item })}
-            onDelete={(item) => setDialog({ kind: "delete", item })}
-          />
-        ) : (
-          <EmptyState isRoot={folderId === null} />
-        )}
-      </div>
+      {file ? (
+        <FileEditor
+          key={file.id}
+          file={file}
+          onRename={(item) => setDialog({ kind: "rename", item })}
+          onDelete={(item) => setDialog({ kind: "delete", item })}
+        />
+      ) : (
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+          {children.length > 0 ? (
+            <ItemList
+              items={children}
+              onRename={(item) => setDialog({ kind: "rename", item })}
+              onDelete={(item) => setDialog({ kind: "delete", item })}
+            />
+          ) : (
+            <EmptyState isRoot={folderId === null} />
+          )}
+        </div>
+      )}
 
       {dialog?.kind === "create" && (
         <NameDialog
