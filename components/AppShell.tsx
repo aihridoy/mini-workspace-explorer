@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import { CloseIcon, MenuIcon } from "@/components/Icons";
 import { MainPanel } from "@/components/MainPanel";
+import { SearchBox } from "@/components/SearchBox";
 import { Sidebar } from "@/components/Sidebar";
 
 export function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const closeDrawer = () => setDrawerOpen(false);
 
   useEffect(() => {
@@ -29,7 +31,12 @@ export function AppShell() {
         >
           <MenuIcon className="size-5" />
         </button>
-        <h1 className="text-sm font-semibold">Mini Workspace Explorer</h1>
+        <h1 className="hidden text-sm font-semibold sm:block">
+          Mini Workspace Explorer
+        </h1>
+        <div className="ml-auto flex min-w-0 flex-1 justify-end">
+          <SearchBox query={query} onChange={setQuery} />
+        </div>
       </header>
 
       <div className="flex min-h-0 flex-1">
@@ -62,7 +69,7 @@ export function AppShell() {
         )}
 
         <main className="min-w-0 flex-1 overflow-hidden">
-          <MainPanel />
+          <MainPanel query={query} onClearQuery={() => setQuery("")} />
         </main>
       </div>
     </div>
