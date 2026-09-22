@@ -40,13 +40,35 @@ export function loadState(): WorkspaceState | null {
   }
 }
 
+let saveFailed = false;
+const saveListeners = new Set<() => void>();
+
+function reportSaveResult(succeeded: boolean) {
+  if (saveFailed === !succeeded) return;
+  saveFailed = !succeeded;
+  for (const listener of saveListeners) listener();
+}
+
+export function subscribeToSaveState(listener: () => void): () => void {
+  saveListeners.add(listener);
+  return () => {
+    saveListeners.delete(listener);
+  };
+}
+
+export function hasSaveFailed(): boolean {
+  return saveFailed;
+}
+
 export function saveState(state: WorkspaceState): boolean {
   if (typeof localStorage === "undefined") return false;
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    reportSaveResult(true);
     return true;
   } catch {
+    reportSaveResult(false);
     return false;
   }
 }

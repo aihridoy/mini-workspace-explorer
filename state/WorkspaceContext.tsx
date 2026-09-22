@@ -8,11 +8,17 @@ import {
   useReducer,
   useRef,
   useState,
+  useSyncExternalStore,
   type Dispatch,
   type ReactNode,
 } from "react";
 import { UnsavedChangesDialog } from "@/components/UnsavedChangesDialog";
-import { loadState, saveState } from "@/lib/storage";
+import {
+  hasSaveFailed,
+  loadState,
+  saveState,
+  subscribeToSaveState,
+} from "@/lib/storage";
 import { createInitialState, workspaceReducer } from "@/state/workspaceReducer";
 import type { WorkspaceAction, WorkspaceState } from "@/types";
 
@@ -39,6 +45,12 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const hasUnsavedChanges = useRef(false);
   const [blockedAction, setBlockedAction] = useState<WorkspaceAction | null>(
     null,
+  );
+
+  const saveFailed = useSyncExternalStore(
+    subscribeToSaveState,
+    hasSaveFailed,
+    () => false,
   );
 
   useEffect(() => {
@@ -72,6 +84,14 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
           onDiscard={discardAndContinue}
           onClose={() => setBlockedAction(null)}
         />
+      )}
+      {saveFailed && (
+        <p
+          role="status"
+          className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-sm rounded-md bg-red-600 px-4 py-2 text-center text-sm text-white shadow-lg"
+        >
+          Changes could not be saved to this browser.
+        </p>
       )}
     </WorkspaceContext>
   );

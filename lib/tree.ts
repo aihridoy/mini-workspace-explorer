@@ -50,21 +50,6 @@ export function getDescendantIds(items: ItemMap, id: string): string[] {
   return result;
 }
 
-export function isAncestor(
-  items: ItemMap,
-  ancestorId: string,
-  id: string,
-): boolean {
-  let parentId = items[id]?.parentId ?? null;
-
-  while (parentId !== null) {
-    if (parentId === ancestorId) return true;
-    parentId = items[parentId]?.parentId ?? null;
-  }
-
-  return false;
-}
-
 export function validateName(
   items: ItemMap,
   name: string,
