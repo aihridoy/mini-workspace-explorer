@@ -18,7 +18,8 @@ export function TreeNode({ item, depth, onNavigate }: TreeNodeProps) {
   const isActive = isFolder
     ? state.selectedFolderId === item.id
     : state.openFileId === item.id;
-  const children = isOpen ? getChildren(state.items, item.id) : [];
+  const children = isFolder ? getChildren(state.items, item.id) : [];
+  const hasChildren = children.length > 0;
 
   const handleSelect = () => {
     dispatch(
@@ -39,7 +40,7 @@ export function TreeNode({ item, depth, onNavigate }: TreeNodeProps) {
         }`}
         style={{ paddingLeft: depth * 12 }}
       >
-        {isFolder ? (
+        {isFolder && hasChildren ? (
           <button
             type="button"
             onClick={() => dispatch({ type: "TOGGLE_EXPAND", id: item.id })}
@@ -69,7 +70,7 @@ export function TreeNode({ item, depth, onNavigate }: TreeNodeProps) {
         </button>
       </div>
 
-      {children.length > 0 && (
+      {isOpen && hasChildren && (
         <ul>
           {children.map((child) => (
             <TreeNode
