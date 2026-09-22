@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useDeferredValue, useState } from "react";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { ConfirmDeleteDialog } from "@/components/ConfirmDeleteDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { FileEditor } from "@/components/FileEditor";
 import { ItemList } from "@/components/ItemList";
 import { NameDialog } from "@/components/NameDialog";
+import { SearchResults } from "@/components/SearchResults";
 import { Toolbar } from "@/components/Toolbar";
 import { getChildren, getUniqueName } from "@/lib/tree";
 import { useWorkspace } from "@/state/WorkspaceContext";
@@ -23,10 +24,17 @@ const DEFAULT_NAMES: Record<ItemType, string> = {
   file: "untitled.txt",
 };
 
-export function MainPanel() {
+interface MainPanelProps {
+  query: string;
+  onClearQuery: () => void;
+}
+
+export function MainPanel({ query, onClearQuery }: MainPanelProps) {
   const { state, dispatch } = useWorkspace();
   const [dialog, setDialog] = useState<DialogState>(null);
   const closeDialog = () => setDialog(null);
+  const deferredQuery = useDeferredValue(query);
+  const isSearching = query.trim() !== "";
 
   const folderId = state.selectedFolderId;
   const currentFolder = folderId ? state.items[folderId] : undefined;
@@ -52,7 +60,7 @@ export function MainPanel() {
     <div className="flex h-full flex-col">
       <div className="flex min-h-12 items-center justify-between gap-2 border-b border-zinc-200 px-4 py-2 sm:px-6">
         <Breadcrumb />
-        {!file && (
+        {!file && !isSearching && (
           <Toolbar
             canEditCurrent={Boolean(currentFolder)}
             onNewFolder={() => setDialog({ kind: "create", type: "folder" })}
@@ -69,7 +77,11 @@ export function MainPanel() {
         )}
       </div>
 
-      {file ? (
+      {isSearching ? (
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+          <SearchResults query={deferredQuery} onNavigate={onClearQuery} />
+        </div>
+      ) : file ? (
         <FileEditor
           key={file.id}
           file={file}
