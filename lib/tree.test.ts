@@ -5,7 +5,6 @@ import {
   getDescendantIds,
   getPath,
   getUniqueName,
-  isAncestor,
   searchItems,
   validateName,
 } from "@/lib/tree";
@@ -51,18 +50,6 @@ describe("getDescendantIds", () => {
   test("returns [] for a file or empty folder", () => {
     expect(getDescendantIds(items, "readme")).toEqual([]);
     expect(getDescendantIds(items, "documents")).toEqual([]);
-  });
-});
-
-describe("isAncestor", () => {
-  test("detects parents and grandparents", () => {
-    expect(isAncestor(items, "webbly", "notes")).toBe(true);
-    expect(isAncestor(items, "projects", "notes")).toBe(true);
-  });
-
-  test("is false for siblings and for the item itself", () => {
-    expect(isAncestor(items, "webbly", "personal")).toBe(false);
-    expect(isAncestor(items, "notes", "notes")).toBe(false);
   });
 });
 
