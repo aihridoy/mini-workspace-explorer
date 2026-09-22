@@ -4,6 +4,7 @@ import {
   getChildren,
   getDescendantIds,
   getPath,
+  getUniqueName,
   isAncestor,
   searchItems,
   validateName,
@@ -107,5 +108,19 @@ describe("searchItems", () => {
 
   test("returns [] for an empty query", () => {
     expect(searchItems(items, "  ")).toEqual([]);
+  });
+});
+
+describe("getUniqueName", () => {
+  test("keeps the name when it is free", () => {
+    expect(getUniqueName(items, null, "New folder")).toBe("New folder");
+  });
+
+  test("adds a number when the name is taken", () => {
+    expect(getUniqueName(items, null, "Projects")).toBe("Projects 2");
+  });
+
+  test("puts the number before the file extension", () => {
+    expect(getUniqueName(items, "webbly", "notes.txt")).toBe("notes 2.txt");
   });
 });
