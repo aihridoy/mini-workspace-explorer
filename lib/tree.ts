@@ -105,3 +105,20 @@ export function searchItems(items: ItemMap, query: string): SearchResult[] {
     .sort(compareItems)
     .map((item) => ({ item, location: getLocationLabel(items, item) }));
 }
+
+export function getUniqueName(
+  items: ItemMap,
+  parentId: string | null,
+  desired: string,
+): string {
+  if (validateName(items, desired, parentId) === null) return desired;
+
+  const dot = desired.lastIndexOf(".");
+  const base = dot > 0 ? desired.slice(0, dot) : desired;
+  const extension = dot > 0 ? desired.slice(dot) : "";
+
+  for (let n = 2; ; n++) {
+    const candidate = `${base} ${n}${extension}`;
+    if (validateName(items, candidate, parentId) === null) return candidate;
+  }
+}
